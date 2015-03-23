@@ -78,6 +78,10 @@ int read_off(struct HEdge **edge_list, struct Vertex **vertex_list,
       edge->pair = pair;
       pair->pair = edge;
       edge->vertex = *vertex_list + tmp_v;
+      edge->face = *face_list + i;
+      edge->face->edge = edge;
+
+      (*vertex_list + tmp_v)->edge = edge;
 
       if (firstEdge == NULL) {
 	firstEdge = edge;
@@ -90,7 +94,7 @@ int read_off(struct HEdge **edge_list, struct Vertex **vertex_list,
 
       if (j == (tmp_n - 1)) {
 	edge->next = firstEdge;
-	firstPair->next = pair;
+	//firstPair->next = pair;
       }
 
       prevEdge = edge;
