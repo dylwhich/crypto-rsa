@@ -109,6 +109,7 @@ int read_off(struct Mesh *mesh, const char *filename) {
     for (j = i+1; j < mesh->num_edges; j++) {
       if (mesh->edges[mesh->edges[i].next].vertex == mesh->edges[j].vertex &&
 	  mesh->edges[mesh->edges[j].next].vertex == mesh->edges[i].vertex) {
+	printf("Edges %zu and %zu are pairs!\n", i, j);
 	mesh->edges[i].pair = j;
 	mesh->edges[j].pair = i;
       }
