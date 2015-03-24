@@ -51,18 +51,27 @@ void ask_question(struct Mesh *mesh) {
 
     HEdge_faces(mesh, target-1, buf, buf+1);
     printf("Edge %zu is shared by triangles %zu and %zu\n", target, buf[0]+1, buf[1]+1);
-
     break;
+
   case VERTEX_FACES:
     max_input = mesh->num_vertices;
     printf("Enter the vertex index [1-%zu]: ", max_input);
     ask_index(&target, max_input);
+
+    tmp = Vertex_faces(mesh, target-1, buf, 16);
+    printf("Faces shared by vertex %zu:\n", target);
+    for (i=0; i<tmp; i++) {
+      printf("  %zu\n", buf[i] + 1);
+    }
+
     break;
+
   case VERTEX_EDGES:
     max_input = mesh->num_vertices;
     printf("Enter the vertex index [1-%zu]: ", max_input);
     ask_index(&target, max_input);
     break;
+
   default:
     printf("Well, this should never happen. I hope you're happy.\n");
     break;
