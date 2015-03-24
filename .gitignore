@@ -70,4 +70,5 @@ tramp
 *.dSYM/
 
 Model
+meshes
 test.off
