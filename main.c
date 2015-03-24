@@ -36,17 +36,22 @@ void ask_question(struct Mesh *mesh) {
     max_input = mesh->num_faces;
     printf("Enter the triangle index [1-%zu]: ", max_input);
     ask_index(&target, max_input);
-    tmp = Face_adjacent(mesh, target, buf, 16);
+
+    tmp = Face_adjacent(mesh, target-1, buf, 16);
     printf("Adjacent faces to triangle %zu:\n", target);
     for (i=0; i<tmp; i++) {
-      printf("  %zu\n", buf[i]);
+      printf("  %zu\n", buf[i] + 1);
     }
-    
     break;
+
   case EDGE_TRIANGLES:
     max_input = mesh->num_edges;
     printf("Enter the edge index [1-%zu]: ", max_input);
     ask_index(&target, max_input);
+
+    HEdge_faces(mesh, target-1, buf, buf+1);
+    printf("Edge %zu is shared by triangles %zu and %zu\n", target, buf[0]+1, buf[1]+1);
+
     break;
   case VERTEX_FACES:
     max_input = mesh->num_vertices;
