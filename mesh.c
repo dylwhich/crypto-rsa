@@ -43,5 +43,19 @@ size_t Vertex_faces(struct Mesh *mesh, size_t vertex,
 
 size_t Vertex_edges(struct Mesh *mesh, size_t vertex,
 		    size_t *edges, size_t max_results) {
-  return 0;
+  size_t results = 0;
+  size_t cur_edge = mesh->vertices[vertex].edge;
+
+  do {
+    if (results == max_results) {
+      return 0;
+    }
+
+    edges[results++] = cur_edge;
+    edges[results] = mesh->edges[cur_edge].pair;
+    cur_edge = mesh->edges[mesh->edges[cur_edge].pair].next;
+    results++;
+  }  while (cur_edge != mesh->vertices[vertex].edge);
+
+  return results;
 }

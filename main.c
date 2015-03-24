@@ -63,13 +63,18 @@ void ask_question(struct Mesh *mesh) {
     for (i=0; i<tmp; i++) {
       printf("  %zu\n", buf[i] + 1);
     }
-
     break;
 
   case VERTEX_EDGES:
     max_input = mesh->num_vertices;
     printf("Enter the vertex index [1-%zu]: ", max_input);
     ask_index(&target, max_input);
+
+    tmp = Vertex_edges(mesh, target-1, buf, 16);
+    printf("Edges shared by vertex %zu:\n", target);
+    for (i=0; i<tmp; i++) {
+      printf("  %zu\n", buf[i] + 1);
+    }
     break;
 
   default:
