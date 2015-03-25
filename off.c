@@ -12,6 +12,7 @@ int read_off(struct Mesh *mesh, const char *filename) {
   size_t i, j;
   size_t tmp_n, tmp_v, edge_index;
   size_t first_edge, prev_edge;
+  int mode;
 
   // Open file
   errno = 0;
@@ -25,9 +26,15 @@ int read_off(struct Mesh *mesh, const char *filename) {
   // Check header
   fscanf(file, "%512s\n", buf);
   if (strcmp(buf, "OFF")) {
-    fprintf(stderr, "%s is not an OFF file: expected 'OFF', got '%s'\n",
+    if (strcmp(buf, "NOFF")) {
+      fprintf(stderr, "%s is not an [N]OFF file: expected 'OFF' or 'NOFF', got '%s'\n",
 	    filename, buf);
-    return 1;
+      return 1;
+    } else {
+      mode = MODE_NOFF;
+    }
+  } else {
+    mode = MODE_OFF;
   }
 
   // Read counts
@@ -42,10 +49,22 @@ int read_off(struct Mesh *mesh, const char *filename) {
   edge_index = 0;
 
   for (i = 0; i < mesh->num_vertices; i++) {
-    fscanf(file, "%f %f %f\n", &(mesh->vertices[i].x),
+    fscanf(file, "%f %f %f", &(mesh->vertices[i].x),
 	   &(mesh->vertices[i].y), &(mesh->vertices[i].z));
+
     printf("Read vertex %f, %f, %f\n", mesh->vertices[i].x, mesh->vertices[i].y,
 	   mesh->vertices[i].z);
+
+    if (mode == MODE_NOFF) {
+      fscanf(file, " %f %f %f", &(mesh->vertices[i].nx),
+	     &(mesh->vertices[i].ny), &(mesh->vertices[i].nz));
+      printf("Normals are %f, %f, %f\n", mesh->vertices[i].nx, mesh->vertices[i].ny,
+	   mesh->vertices[i].nz);
+
+    }
+
+    // Hack because the files are formatted incorrectly
+    while (getc(file) != '\n');
   }
 
   // for each face:

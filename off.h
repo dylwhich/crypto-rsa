@@ -3,8 +3,9 @@
 
 #include <stddef.h>
 
+#define MODE_OFF 0
+#define MODE_NOFF 1
+
 int read_off(struct Mesh *mesh, const char *filename);
-int read_off_sizes(const char *filename, int *num_edges, int *num_vertices,
-		    int *num_faces);
 
 #endif

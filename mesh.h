@@ -23,6 +23,7 @@ struct HEdge {
 struct Vertex {
   size_t edge;
   float x, y, z;
+  float nx, ny, nz;
 };
 
 struct Face {
