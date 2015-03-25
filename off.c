@@ -40,8 +40,6 @@ int read_off(struct Mesh *mesh, const char *filename) {
   // Read counts
   fscanf(file, "%zu %zu %zu\n", &(mesh->num_vertices), &(mesh->num_faces), &(mesh->num_edges));
 
-  printf("%zu vertices, %zu faces, %zu edges\n", mesh->num_vertices, mesh->num_faces, mesh->num_edges);
-
   // Allocate arrays
   mesh->vertices = malloc(mesh->num_vertices * sizeof(struct Vertex));
   mesh->faces = malloc(mesh->num_faces * sizeof(struct Face));
@@ -52,14 +50,9 @@ int read_off(struct Mesh *mesh, const char *filename) {
     fscanf(file, "%f %f %f", &(mesh->vertices[i].x),
 	   &(mesh->vertices[i].y), &(mesh->vertices[i].z));
 
-    printf("Read vertex %f, %f, %f\n", mesh->vertices[i].x, mesh->vertices[i].y,
-	   mesh->vertices[i].z);
-
     if (mode == MODE_NOFF) {
       fscanf(file, " %f %f %f", &(mesh->vertices[i].nx),
 	     &(mesh->vertices[i].ny), &(mesh->vertices[i].nz));
-      printf("Normals are %f, %f, %f\n", mesh->vertices[i].nx, mesh->vertices[i].ny,
-	   mesh->vertices[i].nz);
     }
 
     // Hack because the files are formatted incorrectly
@@ -69,7 +62,6 @@ int read_off(struct Mesh *mesh, const char *filename) {
   // for each face:
   for (i = 0; i < mesh->num_faces; i++) {
     fscanf(file, "%zu", &tmp_n);
-    printf("Face %zu has %zu edges:\n", i, tmp_n);
 
     // Create the edge list, just a bit bigger than it needs to be
     if (i == 0) {
@@ -80,7 +72,6 @@ int read_off(struct Mesh *mesh, const char *filename) {
     // for each vertex:
     for (j = 0; j < tmp_n; j++) {
       fscanf(file, " %zu", &tmp_v);
-      printf("Vertex %zu: %zu\n", j, tmp_v);
 
       // Set the vertex and face for this edge
       mesh->edges[edge_index].vertex = tmp_v;
@@ -127,7 +118,6 @@ int read_off(struct Mesh *mesh, const char *filename) {
     for (j = i+1; j < mesh->num_edges; j++) {
       if (mesh->edges[mesh->edges[i].next].vertex == mesh->edges[j].vertex &&
 	  mesh->edges[mesh->edges[j].next].vertex == mesh->edges[i].vertex) {
-	printf("Edges %zu and %zu are pairs!\n", i, j);
 	mesh->edges[i].pair = j;
 	mesh->edges[j].pair = i;
       }
