@@ -111,7 +111,7 @@ void Reshape(int width, int height) {
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0, (GLdouble)width/height, 0.01, 100);
+  gluPerspective(60.0, (GLdouble)width/height, 0.01, 600);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glTranslatef(0, 0, -10 + zoom);
