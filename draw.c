@@ -31,6 +31,7 @@ void init() {
   /* background color: black */
   glClearColor(0, 0, 0, 0);
   glShadeModel(GL_FLAT);
+  glFrontFace(GL_CW);
 
   tbInit(GLUT_LEFT_BUTTON);
 }
@@ -67,6 +68,23 @@ void Display() {
       // Draw the edges of the face
       edge = mesh->faces[face].edge;
 
+            // If we should, draw the solid faces
+      if (solid && face_colors[face] > 0) {
+	edge = mesh->faces[face].edge;
+
+	setColor(face_colors[face]);
+	glBegin(GL_TRIANGLES);
+	do {
+	  vertex = mesh->edges[edge].vertex;
+
+	  glVertex3f(mesh->vertices[vertex].x,
+		     mesh->vertices[vertex].y,
+		     mesh->vertices[vertex].z);
+	  edge = mesh->edges[edge].next;
+	} while (edge != mesh->faces[face].edge);
+	glEnd();
+      }
+
       glBegin(GL_LINE_LOOP);
       do {
 	vertex = mesh->edges[edge].vertex;
@@ -79,25 +97,10 @@ void Display() {
 	edge = mesh->edges[edge].next;
       } while (edge != mesh->faces[face].edge);
       glEnd();
-
-      // If we should, draw the solid faces
-      if (solid) {
-	edge = mesh->faces[face].edge;
-
-	glBegin(GL_TRIANGLE_STRIP);
-	do {
-	vertex = mesh->edges[edge].vertex;
-	setColor(edge_colors[edge]);
-
-	glVertex3f(mesh->vertices[vertex].x,
-		   mesh->vertices[vertex].y,
-		   mesh->vertices[vertex].z);
-	} while (edge != mesh->faces[face].edge);
-	glEnd();
-      }
     }
   }
 
+  glPopMatrix();
   glutSwapBuffers();
 }
 

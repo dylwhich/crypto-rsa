@@ -60,7 +60,6 @@ int read_off(struct Mesh *mesh, const char *filename) {
 	     &(mesh->vertices[i].ny), &(mesh->vertices[i].nz));
       printf("Normals are %f, %f, %f\n", mesh->vertices[i].nx, mesh->vertices[i].ny,
 	   mesh->vertices[i].nz);
-
     }
 
     // Hack because the files are formatted incorrectly

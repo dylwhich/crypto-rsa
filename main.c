@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <malloc.h>
+#include <string.h>
 
 #include "mesh.h"
 #include "off.h"
@@ -47,7 +48,7 @@ void ask_question(struct Mesh *mesh) {
 
     // Set the draw color of the target
     solid = 1;
-    f_colors[target] = COLOR_TARGET;
+    f_colors[target-1] = COLOR_TARGET;
 
     tmp = Face_adjacent(mesh, target-1, buf, 16);
     printf("Adjacent faces to triangle %zu:\n", target);
@@ -63,12 +64,15 @@ void ask_question(struct Mesh *mesh) {
     ask_index(&target, max_input);
 
     solid = 1;
-    f_colors[target] = COLOR_TARGET;
+    e_colors[target-1] = COLOR_TARGET;
+    e_colors[mesh->edges[target-1].pair] = COLOR_TARGET;
 
     HEdge_faces(mesh, target-1, buf, buf+1);
     printf("Edge %zu is shared by triangles %zu and %zu\n", target, buf[0]+1, buf[1]+1);
-    e_colors[buf[0]] = COLOR_ANSWER;
-    e_colors[buf[0] + 1] = COLOR_ANSWER;
+    memset(f_colors, COLOR_WIREONLY, mesh->num_faces);
+
+    f_colors[buf[0]] = COLOR_ANSWER;
+    f_colors[buf[1]] = COLOR_ANSWER;
     break;
 
   case VERTEX_FACES:
@@ -77,10 +81,11 @@ void ask_question(struct Mesh *mesh) {
     ask_index(&target, max_input);
 
     solid = 1;
-    v_colors[target] = COLOR_TARGET;
+    v_colors[target-1] = COLOR_TARGET;
 
     tmp = Vertex_faces(mesh, target-1, buf, 16);
     printf("Faces shared by vertex %zu:\n", target);
+    memset(f_colors, COLOR_WIREONLY, mesh->num_faces);
     for (i=0; i<tmp; i++) {
       printf("  %zu\n", buf[i] + 1);
       f_colors[buf[i]] = COLOR_ANSWER;
@@ -92,7 +97,7 @@ void ask_question(struct Mesh *mesh) {
     printf("Enter the vertex index [1-%zu]: ", max_input);
     ask_index(&target, max_input);
 
-    v_colors[target] = COLOR_TARGET;
+    v_colors[target-1] = COLOR_TARGET;
 
     tmp = Vertex_edges(mesh, target-1, buf, 16);
     printf("Edges shared by vertex %zu:\n", target);

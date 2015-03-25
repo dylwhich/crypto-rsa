@@ -8,6 +8,7 @@
 #define WIN_WIDTH  512
 
 // color-names for drawing
+#define COLOR_WIREONLY -1
 #define COLOR_DEFAULT 0
 #define COLOR_TARGET 1
 #define COLOR_ANSWER 2
