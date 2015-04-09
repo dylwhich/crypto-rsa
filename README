@@ -1,0 +1,16 @@
+
+/*
+  @@ Author:
+     @ Revision 1 (August 13): Jian Chen (jichen@umbc.edu)
+     @ Revision 2 (February 16): Dylan Whichard (dylwhich@umbc.edu)
+     @ Revision 3 (March 24): Dylan Whichard (dylwhich@umbc.edu)
+  @@ CMSC 435 / 634 project 3:  modeling
+  @@ August 2013
+*/
+
+No extra credit attempted.
+To compile, type `make`.
+To run, type `./Model <off-file>`
+The questions in the program expect and give output based on indices starting at 1.
+The following website was used to help design this project conceptually.
+ * www.flipcode.com/archives/The_Half-Edge_Data_Structure.shtml
