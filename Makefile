@@ -1,6 +1,6 @@
 CFLAGS := -ggdb -Wall -I/usr/include -L/usr/lib64
-OBJS := off.o mesh.o main.o draw.o trackball.o
-EXECUTABLE := Model
+OBJS := off.o mesh.o main.o draw.o trackball.o bezier.o
+EXECUTABLE := Animate
 LDLIBS := -lglut -lGL -lGLU -lGL -lXmu -lXext -lX11 -lm
 
 .PHONY: clean
