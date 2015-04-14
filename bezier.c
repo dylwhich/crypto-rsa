@@ -77,16 +77,15 @@ void spline_remove_control_point(struct Spline *this, struct ControlPoint *point
   free(point);
 }
 
-void spline_save_array(struct Spline *this, GLfloat **target) {
+void spline_save_array(struct Spline *this, GLfloat *target) {
   struct ControlPoint *cur = this->point;
   int i = 0;
 
   while (cur != NULL) {
-    target[i][0] = cur->x;
-    target[i][1] = cur->y;
-    target[i][2] = cur->z;
+    target[i++] = cur->x;
+    target[i++] = cur->y;
+    target[i++] = cur->z;
 
-    i++;
     cur = cur->next;
   }
 }

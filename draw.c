@@ -17,29 +17,25 @@ GLfloat *plain_points;
 
 void init(void)
 {
-  int total_points = 0;
+  struct Spline *cur_spline;
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glShadeModel(GL_FLAT);
 
-  num_splines = 1;
+  num_splines = 4;
   
   splines = malloc(sizeof(struct Spline) * num_splines);
+
+  cur_spline = splines;
+  spline_init(cur_spline);
+  spline_add_control_point_at(cur_spline, NULL, -4.0, -4.0, 0.0);
+  spline_add_control_point_at(cur_spline, NULL, -2.0, 4.0, 0.0);
+  spline_add_control_point_at(cur_spline, NULL, 2.0, -4.0, 0.0);
+  spline_add_control_point_at(cur_spline, NULL, 4.0, 4.0, 0.0);
 
   // TODO don't hardcode this!!!
   plain_points = malloc(3 * sizeof(GLfloat) * splines[0].num_points);
 
-  plain_points[0] = -4.0;
-  plain_points[1] = -4.0;
-  plain_points[2] =  0.0;
-  plain_points[3] = -2.0;
-  plain_points[4] =  4.0;
-  plain_points[5] =  0.0;
-  plain_points[6] =  2.0;
-  plain_points[7] = -4.0;
-  plain_points[8] =  0.0;
-  plain_points[9] =  4.0;
-  plain_points[10] = 4.0;
-  plain_points[11] = 0.0;
+  spline_save_array(cur_spline, plain_points);
 
   glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, 4/*splines[0].num_points*/, plain_points);
   glEnable(GL_MAP1_VERTEX_3);
