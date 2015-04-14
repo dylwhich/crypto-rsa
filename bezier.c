@@ -31,13 +31,14 @@ struct ControlPoint *spline_add_control_point(struct Spline *this, struct Contro
   // Seek so that 'cur' points to the 
   while (cur != NULL && cur->next != before) cur = cur->next;
 
-  if (cur == NULL) {
-    fprintf(stderr, "ERROR spline_add_control_point: cur is NULL\n");
-    exit(1);
+  new_point->next = before;
+
+  if (cur != NULL) {
+    cur->next = new_point;
+  } else {
+    this->point = new_point;
   }
 
-  new_point->next = before;
-  cur->next = new_point;
   this->num_points++;
 
   return new_point;
@@ -52,13 +53,14 @@ struct ControlPoint *spline_add_control_point_at(struct Spline *this, struct Con
   // Seek so that 'cur' points to the 
   while (cur != NULL && cur->next != before) cur = cur->next;
 
-  if (cur == NULL) {
-    fprintf(stderr, "ERROR spline_add_control_point_at: cur is NULL\n");
-    exit(1);
+  new_point->next = before;
+
+  if (cur != NULL) {
+    cur->next = new_point;
+  } else {
+    this->point = new_point;
   }
 
-  new_point->next = before;
-  cur->next = new_point;
   this->num_points++;
 
   return new_point;
