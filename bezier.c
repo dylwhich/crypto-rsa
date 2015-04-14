@@ -26,7 +26,7 @@ struct ControlPoint *spline_add_control_point(struct Spline *this, struct Contro
   struct ControlPoint *cur = this->point;
   struct ControlPoint *new_point = (struct ControlPoint*) malloc(sizeof(struct ControlPoint));
 
-  control_point_init(new_point);
+  control_point_init(new_point, this);
 
   // Seek so that 'cur' points to the 
   while (cur != NULL && cur->next != before) cur = cur->next;
@@ -48,7 +48,7 @@ struct ControlPoint *spline_add_control_point_at(struct Spline *this, struct Con
   struct ControlPoint *cur = this->point;
   struct ControlPoint *new_point = (struct ControlPoint*) malloc(sizeof(struct ControlPoint));
 
-  control_point_init_coord(new_point, x, y, z);
+  control_point_init_coord(new_point, this, x, y, z);
 
   // Seek so that 'cur' points to the 
   while (cur != NULL && cur->next != before) cur = cur->next;
@@ -91,24 +91,26 @@ void spline_save_array(struct Spline *this, GLfloat *target) {
 }
 
 
-void control_point_init(struct ControlPoint *this) {
+void control_point_init(struct ControlPoint *this, struct Spline *parent) {
   this->x = 0.0;
   this->y = 0.0;
   this->z = 0.0;
 
+  this->spline = parent;
   this->next = NULL;
 }
 
-void control_point_init_coord(struct ControlPoint *this, GLfloat x, GLfloat y, GLfloat z) {
+void control_point_init_coord(struct ControlPoint *this, struct Spline *parent, GLfloat x, GLfloat y, GLfloat z) {
   this->x = x;
   this->y = y;
   this->z = z;
 
+  this->spline = parent;
   this->next = NULL;
 }
 
-void control_point_init_coord_next(struct ControlPoint *this, GLfloat x, GLfloat y, GLfloat z, struct ControlPoint *next) {
-  control_point_init_coord(this, x, y, z);
+void control_point_init_coord_next(struct ControlPoint *this, struct Spline *parent, GLfloat x, GLfloat y, GLfloat z, struct ControlPoint *next) {
+  control_point_init_coord(this, parent, x, y, z);
   this->next = next;
 }
 

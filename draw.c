@@ -11,9 +11,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define BBOX_WIDTH 5
+#define BBOX_HEIGHT 5
+
 struct Spline *splines;
 size_t num_splines;
 GLfloat *plain_points;
+
+struct ControlPoint *selected_point;
+int dragging = 0;
+int drag_x, drag_y;
 
 void init(void)
 {
@@ -21,7 +28,7 @@ void init(void)
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glShadeModel(GL_FLAT);
 
-  num_splines = 4;
+  num_splines = 1;
   
   splines = malloc(sizeof(struct Spline) * num_splines);
 
@@ -76,7 +83,38 @@ void reshape(int w, int h)
   glLoadIdentity();
 }
 
-struct ControlPoint *check_collide(GLfloat x, GLfloat y) {
+struct ControlPoint *check_collide(int x, int y) {
+  struct Spline *cur_spline;
+  struct ControlPoint *cur_point;
+  int i;
+
+  GLfloat model[16], proj[16];
+  GLint view[16];
+  GLdouble world_x, world_y, world_z;
+
+  glGetFloatv(GL_MODELVIEW_MATRIX, model);
+  glGetFloatv(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+
+  gluUnProject(x, y, 0, model, proj, view, &world_x, &world_y, &world_z);
+  printf("Unprojected %d, %d to %lf, %lf, %lf\n", x, y, world_x, world_y, world_z);
+
+  for (cur_spline = splines; cur_spline != splines + num_splines; cur_spline++) {
+    cur_point = cur_spline->point;
+
+    printf("a\n");
+    printf("aaa%f\n", cur_point->x);
+
+    while (cur_point != NULL) {
+      if (cur_point->x >= x - BBOX_WIDTH && cur_point->x <= x + BBOX_WIDTH &&
+	  cur_point->y >= y - BBOX_HEIGHT && cur_point->y <= y + BBOX_HEIGHT) {
+	printf("Collide!\n");
+	return cur_point;
+      }
+
+      cur_point = cur_point->next;
+    }
+  }
   return NULL;
 }
 
@@ -103,10 +141,17 @@ void mouse(int button, int state, int x, int y) {
   switch (state) {
   case 0:
     s_state = down;
+    check_collide(x, y);
     break;
 
   case 1:
     s_state = up;
+    if (dragging) {
+      printf("Dragging DONE -- (%d, %d)\n", drag_x, drag_y);
+    } else {
+      printf("Clicked -- (%d, %d)\n", x, y);
+    }
+    dragging = 0;
     break;
   }
 
@@ -114,7 +159,9 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void motion(int x, int y) {
-  printf("Dragged to (%d, %d)\n", x, y);
+  dragging = 1;
+  drag_x = x;
+  drag_y = y;
 }
 
 int main(int argc, char** argv)
