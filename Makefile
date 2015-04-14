@@ -1,5 +1,5 @@
 CFLAGS := -ggdb -Wall -I/usr/include -L/usr/lib64
-OBJS := mesh.o main.o draw.o trackball.o bezier.o
+OBJS := draw.o trackball.o bezier.o
 EXECUTABLE := Animate
 LDLIBS := -lglut -lGL -lGLU -lGL -lXmu -lXext -lX11 -lm
 
