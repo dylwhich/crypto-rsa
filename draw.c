@@ -9,6 +9,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 struct Spline *splines;
 size_t num_splines;
@@ -79,6 +80,47 @@ void reshape(int w, int h)
   glLoadIdentity();
 }
 
+struct ControlPoint *check_collide(GLfloat x, GLfloat y) {
+  return NULL;
+}
+
+void mouse(int button, int state, int x, int y) {
+  const char *button_l = "LEFT", *button_r = "RIGHT", *button_m = "MIDDLE";
+  const char *up = "UP", *down="DOWN";
+
+  const char *s_button, *s_state;
+
+  switch (button) {
+  case 0:
+    s_button = button_l;
+    break;
+
+  case 1:
+    s_button = button_r;
+    break;
+
+  case 2:
+    s_button = button_m;
+    break;
+  }
+
+  switch (state) {
+  case 0:
+    s_state = down;
+    break;
+
+  case 1:
+    s_state = up;
+    break;
+  }
+
+  printf("%s %4s (%d, %d)\n", s_button, s_state, x, y);
+}
+
+void motion(int x, int y) {
+  printf("Dragged to (%d, %d)\n", x, y);
+}
+
 int main(int argc, char** argv)
 {
   glutInit(&argc, argv);
@@ -89,6 +131,8 @@ int main(int argc, char** argv)
   init ();
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
+  glutMouseFunc(mouse);
+  glutMotionFunc(motion);
   glutMainLoop();
   return 0;
 }
