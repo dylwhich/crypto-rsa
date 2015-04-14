@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define BBOX_WIDTH 5
-#define BBOX_HEIGHT 5
+#define BBOX_WIDTH 0.1
+#define BBOX_HEIGHT 0.1
 
 struct Spline *splines;
 size_t num_splines;
@@ -46,13 +46,15 @@ void init(void)
 
   glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, 4/*splines[0].num_points*/, plain_points);
   glEnable(GL_MAP1_VERTEX_3);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
 }
 
 void display(void)
 {
   int i;
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glColor3f(1.0, 1.0, 1.0);
   glBegin(GL_LINE_STRIP);
   for (i = 0; i <= 30; i++)
@@ -86,28 +88,23 @@ void reshape(int w, int h)
 struct ControlPoint *check_collide(int x, int y) {
   struct Spline *cur_spline;
   struct ControlPoint *cur_point;
-  int i;
 
-  GLfloat model[16], proj[16];
-  GLint view[16];
-  GLdouble world_x, world_y, world_z;
+  GLint view[4];
+  GLfloat winx, winy, winz;
 
-  glGetFloatv(GL_MODELVIEW_MATRIX, model);
-  glGetFloatv(GL_PROJECTION_MATRIX, proj);
   glGetIntegerv(GL_VIEWPORT, view);
 
-  gluUnProject(x, y, 0, model, proj, view, &world_x, &world_y, &world_z);
-  printf("Unprojected %d, %d to %lf, %lf, %lf\n", x, y, world_x, world_y, world_z);
+  winx = 10.0 * ((float)x / view[2]) - 5.0;
+  winy = -(10.0 * ((float)y / view[3]) - 5.0);
+
+  printf("Click at %f, %f\n", winx, winy);
 
   for (cur_spline = splines; cur_spline != splines + num_splines; cur_spline++) {
     cur_point = cur_spline->point;
 
-    printf("a\n");
-    printf("aaa%f\n", cur_point->x);
-
     while (cur_point != NULL) {
-      if (cur_point->x >= x - BBOX_WIDTH && cur_point->x <= x + BBOX_WIDTH &&
-	  cur_point->y >= y - BBOX_HEIGHT && cur_point->y <= y + BBOX_HEIGHT) {
+      if (cur_point->x >= winx - BBOX_WIDTH && cur_point->x <= winx + BBOX_WIDTH &&
+	  cur_point->y >= winy - BBOX_HEIGHT && cur_point->y <= winy + BBOX_HEIGHT) {
 	printf("Collide!\n");
 	return cur_point;
       }
@@ -167,7 +164,7 @@ void motion(int x, int y) {
 int main(int argc, char** argv)
 {
   glutInit(&argc, argv);
-  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize (500, 500);
   glutInitWindowPosition (100, 100);
   glutCreateWindow (argv[0]);
