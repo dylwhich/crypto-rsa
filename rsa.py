@@ -4,6 +4,8 @@ import sys
 def parse_line(text):
     res = []
 
+    if type(text) is int:
+        text = str(text)
     for char in text:
         if not res:
             res.append(char)
@@ -16,9 +18,7 @@ def parse_line(text):
                 print("Invalid: {}".format(cur))
             res.append(char)
 
-    print(text, "-->", res)
-    final = ''.join((chr(int(n)) for n in res))
-    return final
+    return ''.join((chr(int(n)) for n in res))
 
 # From rosettacode.org/wiki/Modular_inverse#Python
 def extended_gcd(aa, bb):
@@ -36,20 +36,22 @@ def modinv(a, m):
         raise ValueError
     return x % m
 
-def decrypt(p, q, n, b, y):
-    a = modinv(b, n) % ((p-1) * (q-1))
-    print(a)
+class RSA:
+    def __init__(self, p, q, public_exponent, private_exponent=None):
+        self.p = p
+        self.q = q
+        self.n = p*q
+        self.e_pub = public_exponent
 
-    if type(y) is list:
-        for line in y:
-            print(parse_line(str(pow(int(line), a, n))))
-    else:
-        print("{} ** {} % {} = {}".format(int(y), a, n, pow(int(y), a, n)))
-        print(pow(int(y), a, n))
-        (parse_line(str(pow(int(y), a, n))))
+        if not private_exponent:
+            private_exponent = modinv(public_exponent, (p-1)*(q-1))
+        self.e_priv = private_exponent
 
-def encrypt(n, a, x):
-    return pow(x, a, n)
+    def encrypt(self, number):
+        return pow(number, self.e_pub, self.n)
+
+    def decrypt(self, number):
+        return pow(number, self.e_priv, self.n)
 
 def load(fn):
     # returns p, q, n, b, ciphertext
@@ -69,7 +71,6 @@ def load(fn):
                 elif name is 'b':
                     b = int(val)
             elif line.strip():
-                print('regular line', line.strip())
                 ciphertext.append(line.strip())
 
     if None in (p, q, b):
@@ -77,7 +78,18 @@ def load(fn):
     if n is None:
         n = p * q
 
-    return p, q, n, b, ciphertext
+    return RSA(p, q, b), ciphertext
 
 if __name__ == "__main__":
-    decrypt(*load(sys.argv[1]))
+    if len(sys.argv) < 2:
+        print(""" Usage: {} <cipher-file>
+
+        cipher-file should consist of lines of the format <name>=<val>,
+        where name is 'p', 'q', 'n', or 'b', corresponding to the factors of the
+        RSA modular value, the RSA modular value, and the public exponent.
+        Providing n is optional. Following these lines should be the ciphertext,
+        as numbers, one per line.""")
+        exit(0)
+
+    crypto, text = load(sys.argv[1])
+    print(''.join([parse_line(crypto.decrypt(int(line))) for line in text]))
