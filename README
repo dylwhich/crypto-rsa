@@ -10,7 +10,9 @@
 
 No extra credit attempted.
 To compile, type `make`.
-To run, type `./Model <off-file>`
-The questions in the program expect and give output based on indices starting at 1.
-The following website was used to help design this project conceptually.
- * www.flipcode.com/archives/The_Half-Edge_Data_Structure.shtml
+To run, type `./Animate`
+
+To move control points, click and drag.
+Code from the following website was used:
+ * http://www.glprogramming.com/red/chapter12#name2
+ 

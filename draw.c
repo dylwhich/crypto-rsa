@@ -40,7 +40,7 @@ void init(void)
   spline_add_control_point_at(cur_spline, NULL, 4.0, 4.0, 0.0);
 
   // TODO don't hardcode this!!!
-  plain_points = malloc(3 * sizeof(GLfloat) * splines[0].num_points);
+  plain_points = malloc(3 * sizeof(GLfloat) * splines[0].num_points * 64);
 
   spline_save_array(cur_spline, plain_points);
 
@@ -53,6 +53,9 @@ void init(void)
 void display(void)
 {
   int i;
+
+  spline_save_array(&splines[0], plain_points);
+  glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, 4/*splines[0].num_points*/, plain_points);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glColor3f(1.0, 1.0, 1.0);
@@ -85,17 +88,20 @@ void reshape(int w, int h)
   glLoadIdentity();
 }
 
+void get_real_pos(int x, int y, GLfloat *winx, GLfloat *winy) {
+  GLint view[4];
+  glGetIntegerv(GL_VIEWPORT, view);
+
+  *winx = 10.0 * ((float)x / view[2]) - 5.0;
+  *winy = -(10.0 * ((float)y / view[3]) - 5.0);
+}
+
 struct ControlPoint *check_collide(int x, int y) {
   struct Spline *cur_spline;
   struct ControlPoint *cur_point;
+  GLfloat winx, winy, winz = 0;
 
-  GLint view[4];
-  GLfloat winx, winy, winz;
-
-  glGetIntegerv(GL_VIEWPORT, view);
-
-  winx = 10.0 * ((float)x / view[2]) - 5.0;
-  winy = -(10.0 * ((float)y / view[3]) - 5.0);
+  get_real_pos(x, y, &winx, &winy);
 
   printf("Click at %f, %f\n", winx, winy);
 
@@ -120,6 +126,7 @@ void mouse(int button, int state, int x, int y) {
   const char *up = "UP", *down="DOWN";
 
   const char *s_button, *s_state;
+  GLfloat winx, winy;
 
   switch (button) {
   case 0:
@@ -138,13 +145,18 @@ void mouse(int button, int state, int x, int y) {
   switch (state) {
   case 0:
     s_state = down;
-    check_collide(x, y);
+    selected_point = check_collide(x, y);
     break;
 
   case 1:
     s_state = up;
     if (dragging) {
       printf("Dragging DONE -- (%d, %d)\n", drag_x, drag_y);
+      if (selected_point != NULL) {
+	get_real_pos(x, y, &winx, &winy);
+	selected_point->x = winx;
+	selected_point->y = winy;
+      }
     } else {
       printf("Clicked -- (%d, %d)\n", x, y);
     }
@@ -153,12 +165,20 @@ void mouse(int button, int state, int x, int y) {
   }
 
   printf("%s %4s (%d, %d)\n", s_button, s_state, x, y);
+  glutPostRedisplay();
 }
 
 void motion(int x, int y) {
+  GLfloat winx, winy;
   dragging = 1;
   drag_x = x;
   drag_y = y;
+  if (selected_point != NULL) {
+    get_real_pos(x, y, &winx, &winy);
+    selected_point->x = winx;
+    selected_point->y = winy;
+    glutPostRedisplay();
+  }
 }
 
 int main(int argc, char** argv)
