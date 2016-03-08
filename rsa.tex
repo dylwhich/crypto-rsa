@@ -1,0 +1,92 @@
+\documentclass[10pt]{article}
+
+\bibliographystyle{ieeetr}
+
+\usepackage{multirow}
+\usepackage{titlesec}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{verbatim}
+\usepackage{listings}
+
+\lstset{
+  language=python,
+  basicstyle=\ttfamily,
+  breaklines=true,
+  columns=fullflexible
+  }
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+\textsc{\LARGE CMSC 443}\\[.5cm]
+\textsc{\Large Dylan Whichard}\\[.5cm]
+\textsc{\Large Dr. Zieglar}\\[.4cm]
+
+\rule{\linewidth}{.05mm} \\[0.4cm]
+
+{\huge \bfseries Hard RSA Cipher}\\[.4cm]
+\rule{\linewidth}{.05mm} \\[0.4cm]
+
+\vfill
+
+{\large \today}\\
+{\large Solved: May 12, 2015 4:45pm}
+
+\end{center}
+\end{titlepage}
+
+\section{Ciphertext}
+\paragraph{}
+\small{\texttt{\verbatiminput{hard_ciphertext.txt}}}
+
+\section{Key}
+\paragraph{}
+\[a = │5684203361168418697394927389049400401188490076253517520708545189449027540530865526606666195\]
+\[b = 10435733847851623629448058676683403047996735446407327640802538255018657950473929330040336155\]
+\[p = 2577030773300010453665537724988958390877393737\]
+\[q = 8904933665769254141002975302442633544151412757\]
+
+Where \(a\) is the private exponent, \(b\) is the public exponent, and \(p\) and \(q\) are the prime factors of \(n\).
+
+\section{Plaintext}
+\paragraph{}
+\texttt{\input{hard_plaintext.txt}}
+
+\section{Methodology}
+\paragraph{}
+My approach to breaking this cipher was to use a program called
+\texttt{GGNFS}\cite{ggnfs-source}\cite{ggnfs-guide} along with
+\texttt{msieve}\cite{msieve} via a wrapper script\cite{factmsieve}
+(with slight modifications required make it run), to factor the public key. It
+was then trivial to write my own script\cite{rsa} which used Python's
+built-in support for big-number arithmetic and fast modular
+exponentiation to perform the decryption action with these derived
+values. In my solution, I also used an existing piece of
+code\cite{euclid} to perform the extended Euclidean algorithm for
+modular inversion.
+
+\section{Time Spent}
+\paragraph{}
+I spent approximately 8 hours working on the solution, and
+approximately 30 minutes on this writeup.
+
+\pagebreak
+\begin{thebibliography}{1}
+\bibitem{ggnfs-source} \url{http://sourceforge.net/projects/ggnfs/}
+\bibitem{ggnfs-guide} \url{http://gilchrist.ca/jeff/factoring/nfs_beginners_guide.html}
+\bibitem{nsieve} \url{http://sourceforge.net/projects/msieve/}
+\bibitem{factmsieve} \url{https://github.com/GDSSecurity/cloud-and-control/blob/master/scripts/gengnfsjob-testharness/factmsieve.74.py}
+\bibitem{rsa} See below.
+\bibitem{euclid} \url{http://rosettacode.org/mw/index.php?title=Modular_inverse&oldid=196584#Python}
+\end{thebibliography}
+
+\pagebreak
+\center{\Large{\textsc{rsa.py}}}\\[.15cm]
+\hrule
+\lstinputlisting{rsa.py}
+
+\end{document}
